@@ -1,5 +1,10 @@
 ![logo](../master/ppr-logo/128x128.png)
 
+# !! THIS IS A FORK VERSION
+Because there is no description of license in original one, and All Licenses are theirs,
+
+YOU MUST NOT DOWNLOAD THIS FORK.
+
 # Pretty Pull Requests
 
 This extension will add various features to the diff view on Github's pull request pages.
@@ -13,7 +18,7 @@ Supports both files changed and commit diffs.
 - Collapse/Expand all that match a regex pattern
 - Collapse/Expand added/removed lines
 - File tree view allowing you to collapse a directory, or jump directly to a file diff
-- (Optional) Use backtick/tilde to switch tabs in the pull request. Backtick goes forward, and tilde (shift-backtick) goes backward. Enable this setting in the extension's options. 
+- (Optional) Use backtick/tilde to switch tabs in the pull request. Backtick goes forward, and tilde (shift-backtick) goes backward. Enable this setting in the extension's options.
 - Set regex patterns to automatically collapse all files in any PR that matches
 
 ![Example Image](https://raw.githubusercontent.com/Yatser/prettypullrequests/master/ppr_example.png)
