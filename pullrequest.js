@@ -1,3 +1,5 @@
+const ANCHOR_CLASS = '.link-gray-dark';
+
 var isGitHub = $("meta[property='og:site_name']").attr('content') === 'GitHub';
 var useLocalStorage = true;
 var lsNamespace = 'ppr'; // Prepend to entries in localStorage for some namespacing to make deletion easier.
@@ -53,9 +55,9 @@ function getIds(path) {
     return $ids;
 }
 
-function getId(path) {
-    var $span = $('span[title="' + path + '"]').closest('[id^=diff-]');
-    var $a = $span.prev('a[name^=diff-]');
+function getAnchorName(path) {
+    var $div = $('div[data-path="' + path + '"]').closest('[id^=diff-]');
+    var $a = $div.prev('a[name^=diff-]');
     var id = $a.attr('name');
 
     return id;
@@ -74,8 +76,8 @@ function collectUniquePageInfo() {
   commitHash = $('.sha.user-select-contain').text();
 }
 
-function toggleDiff(id, duration, display) {
-    var $a = $('a[name^=' + id + ']');
+function toggleDiff(anchorName, duration, display) {
+    var $a = $('a[name^=' + anchorName + ']');
 
     duration = !isNaN(duration) ? duration : 200;
 
@@ -83,14 +85,14 @@ function toggleDiff(id, duration, display) {
         if (!useLocalStorage) {
             display = 'toggle';
         } else {
-            display = (localStorage.getItem(uniquify(id)) === 'collapse') ? 'expand' : 'collapse';
+            display = (localStorage.getItem(uniquify(anchorName)) === 'collapse') ? 'expand' : 'collapse';
         }
     }
 
     if ($a) {
-        var $span = $a.next('div[id^=diff-]');
-        var $data = $span.children('.data, .image');
-        var $bottom = $span.children('.bottom-collapse');
+        var $div = $a.next('div[id^=diff-]');
+        var $data = $div.children('.js-file-content');
+        var $bottom = $div.children('.bottom-collapse');
 
         switch (display) {
             case 'toggle':
@@ -100,11 +102,11 @@ function toggleDiff(id, duration, display) {
             case 'expand':
                 $data.slideDown(duration);
                 $bottom.show();
-                return useLocalStorage ? localStorage.removeItem(uniquify(id)) : true;
+                return useLocalStorage ? localStorage.removeItem(uniquify(anchorName)) : true;
             default:
                 $data.slideUp(duration);
                 $bottom.hide();
-                return useLocalStorage ? localStorage.setItem(uniquify(id), display) : true;
+                return useLocalStorage ? localStorage.setItem(uniquify(anchorName), display) : true;
         }
     }
     return false;
@@ -149,17 +151,17 @@ function initDiffs() {
 
 function clickTitle() {
     var path = $(this).attr('title');
-    var id = getId(path);
+    var anchorName = getAnchorName(path);
 
-    return toggleDiff(id);
+    return toggleDiff(anchorName);
 }
 
 function clickCollapse() {
-    var $span = $(this).prevAll('.file-header');
-    var path = $span.attr('data-path');
-    var id = getId(path);
+    var $div = $(this).parent().prevAll('.file-header');
+    var path = $div.attr('data-path');
+    var anchorName = getAnchorName(path);
 
-    return toggleDiff(id, '200', 'collapse');
+    return toggleDiff(anchorName, '200', 'collapse');
 }
 
 function autoCollapse() {
@@ -181,6 +183,7 @@ chrome.storage.sync.get({url: '', saveCollapsedDiffs: true, tabSwitchingEnabled:
                 initDiffs();
 
                 $body.on('click', '.user-select-contain, .js-selectable-text', clickTitle);
+                $body.on('click', ANCHOR_CLASS, clickTitle);
                 $body.on('click', '.bottom-collapse', clickCollapse);
                 $body.on('click', '.js-collapse-additions', collapseAdditions);
                 $body.on('click', '.js-collapse-deletions', collapseDeletions);
